@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "github.com/jcmturner/grpckrb/test";
+
+service Service {
+  rpc Reflector(Request) returns (Response) {}
+  rpc Mirror(stream Request) returns (stream Response) {}
+}
+
+message Request {
+  int32 requestInt = 1;
+  string requestStr = 2;
+}
+
+message Response {
+  int32 requestInt = 1;
+  string requestStr = 2;
+  int32 responseInt = 3;
+}
