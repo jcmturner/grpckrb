@@ -1,4 +1,4 @@
-name: v7
+name: grpckrb
 on:
   push:
     paths-ignore:
@@ -38,6 +38,7 @@ jobs:
       - name: Start integration test dependencies
         run: |
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -yq protobuf-compiler
+          protoc --version
           go get google.golang.org/protobuf/cmd/protoc-gen-go
           go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
           sudo docker run -d -h kdc.test.gokrb5 -v /etc/localtime:/etc/localtime:ro -p 88:88 -p 88:88/udp -p 464:464 -p 464:464/udp --name krb5kdc jcmturner/gokrb5:kdc-centos-default
