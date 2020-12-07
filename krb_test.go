@@ -12,7 +12,7 @@ import (
 
 	"github.com/jcmturner/gokrb5/v8/config"
 	"github.com/jcmturner/gokrb5/v8/keytab"
-	"github.com/jcmturner/grpc-krb/test"
+	"github.com/jcmturner/grpckrb/test"
 	"google.golang.org/grpc"
 
 	"github.com/jcmturner/gokrb5/v8/service"

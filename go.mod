@@ -1,4 +1,4 @@
-module github.com/jcmturner/grpc-krb
+module github.com/jcmturner/grpckrb
 
 go 1.15
 
