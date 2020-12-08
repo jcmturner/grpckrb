@@ -46,6 +46,7 @@ jobs:
 
       - name: Compile Protobuf
         run: |
+          echo "Path: ${PATH}"
           cd test
           protoc --go_out=paths=source_relative:. --go-grpc_out=paths=source_relative:. test.proto
         id: protobuf
