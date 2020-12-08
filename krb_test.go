@@ -271,16 +271,17 @@ func TestStream_ValidAuthn_InvalidAuthz(t *testing.T) {
 }
 
 func connect(addr, spn, username, ktHex string) (*grpc.ClientConn, error) {
-	ci := new(KrbClientInterceptor)
-
 	kcfg, _ := config.NewFromString(krb5conf)
 	b, _ := hex.DecodeString(ktHex)
 	kt := keytab.New()
 	kt.Unmarshal(b)
 	cl := client.NewWithKeytab(username, "TEST.GOKRB5", kt, kcfg)
 
-	ci.KRBClient = cl
-	ci.DefaultSPN = spn
+	ci := &KRBClientInterceptor{
+		KRBClient:  cl,
+		DefaultSPN: spn,
+	}
+
 	if ci.DefaultSPN == "" {
 		ci.DefaultSPN = "HTTP/host.test.gokrb5"
 	}

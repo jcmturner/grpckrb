@@ -16,13 +16,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type KrbClientInterceptor struct {
+type KRBClientInterceptor struct {
 	KRBClient  *client.Client
 	DefaultSPN string
 	MethodSPNs map[string]string
 }
 
-func (i *KrbClientInterceptor) Unary() grpc.UnaryClientInterceptor {
+func (i *KRBClientInterceptor) Unary() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		ctx, err := i.attachKrbToken(ctx, cc, method)
 		if err != nil {
@@ -32,7 +32,7 @@ func (i *KrbClientInterceptor) Unary() grpc.UnaryClientInterceptor {
 	}
 }
 
-func (i *KrbClientInterceptor) Stream() grpc.StreamClientInterceptor {
+func (i *KRBClientInterceptor) Stream() grpc.StreamClientInterceptor {
 	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		ctx, err := i.attachKrbToken(ctx, cc, method)
 		if err != nil {
@@ -46,7 +46,7 @@ func (i *KrbClientInterceptor) Stream() grpc.StreamClientInterceptor {
 	}
 }
 
-func (i *KrbClientInterceptor) attachKrbToken(ctx context.Context, cc *grpc.ClientConn, method string) (context.Context, error) {
+func (i *KRBClientInterceptor) attachKrbToken(ctx context.Context, cc *grpc.ClientConn, method string) (context.Context, error) {
 	err := i.KRBClient.AffirmLogin()
 	if err != nil {
 		return ctx, err
@@ -87,7 +87,7 @@ func (i *KrbClientInterceptor) attachKrbToken(ctx context.Context, cc *grpc.Clie
 	return metadata.AppendToOutgoingContext(ctx, MDField, b64), nil
 }
 
-func (i *KrbClientInterceptor) resolveSPN(cc *grpc.ClientConn, method string) string {
+func (i *KRBClientInterceptor) resolveSPN(cc *grpc.ClientConn, method string) string {
 	if spn, ok := i.MethodSPNs[method]; ok {
 		return spn
 	}
