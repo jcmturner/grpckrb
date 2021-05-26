@@ -54,6 +54,7 @@ func (i *KRBServerInterceptor) Unary() grpc.UnaryServerInterceptor {
 		}
 
 		i.Settings.Logger().Printf("user %s@%s authorised to access %s", identity.UserName(), identity.Domain(), info.FullMethod)
+		ctx = context.WithValue(ctx, goidentity.CTXKey, identity)
 		return handler(ctx, req)
 	}
 }
