@@ -35,6 +35,11 @@ func NewKRBServerInterceptor(kt *keytab.Keytab, logger *log.Logger) *KRBServerIn
 
 func (i *KRBServerInterceptor) Unary() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+		identity, identErr := i.authn(ctx)
+		if identErr == nil {
+			ctx = context.WithValue(ctx, goidentity.CTXKey, identity)
+		}
+
 		if i.AllowAnonymous {
 			if _, ok := i.AuthorizationRoles[info.FullMethod]; !ok {
 				// Anonymous access is allowed and there is no defined role needed for this method so just serve it
@@ -42,10 +47,9 @@ func (i *KRBServerInterceptor) Unary() grpc.UnaryServerInterceptor {
 			}
 		}
 
-		identity, err := i.authn(ctx)
-		if err != nil {
-			i.Settings.Logger().Printf("kerberos authentication failed for request to %s: %v", info.FullMethod, err)
-			return nil, err
+		if identErr != nil {
+			i.Settings.Logger().Printf("kerberos authentication failed for request to %s: %v", info.FullMethod, identErr)
+			return nil, identErr
 		}
 
 		if !i.authz(identity, info.FullMethod) {
