@@ -36,9 +36,7 @@ func NewKRBServerInterceptor(kt *keytab.Keytab, logger *log.Logger) *KRBServerIn
 func (i *KRBServerInterceptor) Unary() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		identity, identErr := i.authn(ctx)
-		if identErr != nil {
-			i.Settings.Logger().Printf("kerberos authentication failed for request to %s: %v", info.FullMethod, identErr)
-		} else {
+		if identErr == nil {
 			ctx = context.WithValue(ctx, goidentity.CTXKey, identity)
 		}
 
@@ -50,6 +48,7 @@ func (i *KRBServerInterceptor) Unary() grpc.UnaryServerInterceptor {
 		}
 
 		if identErr != nil {
+			i.Settings.Logger().Printf("kerberos authentication failed for request to %s: %v", info.FullMethod, identErr)
 			return nil, identErr
 		}
 
